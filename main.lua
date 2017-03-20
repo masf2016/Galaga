@@ -1,7 +1,8 @@
 widthWindow = love.graphics.getWidth()                                 -- largura da janela de jogo
 widthWindowPlayerArea = love.graphics.getWidth() * 0.7                 -- area do player, 70% da tela
 widthWindowInfoArea = love.graphics.getWidth() - widthWindowPlayerArea -- area de informacao
-heightWindow = love.graphics.getHeight()                               -- altura da janela de jogo
+heightWindow = love.graphics.getHeight()
+                             -- altura da janela de jogo
 function love.load()
 naveBrancaImage = love.graphics.newImage("assets/player-white.png")
 
@@ -10,8 +11,8 @@ naveBrancaImage = love.graphics.newImage("assets/player-white.png")
     posY = heightWindow - (naveBrancaImage:getHeight()/2),             -- posicao Y do objeto na tela, equivale a altura da janela menos a metade do tamanho do player
     velocidade = 500                                                       -- velocidade de deslocamento do player
   }
-  atira = true                                                       -- disparo, habilitado
-  delayTiro = 0.1                                                   -- delay entre os disparo
+  disparo = true                                                       -- disparo, habilitado
+  delayTiro = 0.2                                                   -- delay entre os disparo
   tempoAteAtirar = delayTiro                                           -- tempo ate o disparo, equivale ao delayShoot
   tiros = {}                                                            -- disparos
   imageTiro = love.graphics.newImage("assets/ammunition.png")        --imagem usada para munição
@@ -47,16 +48,16 @@ function love.update(dt)
 end
 
 function atirar (dt)
-      tempoAteAtirar = tempoAteAtirar - (1 * dt)                  -- decremetar a variavel de tiro
+    tempoAteAtirar = tempoAteAtirar - (1 * dt)                  -- decremetar a variavel de tiro
       if tempoAteAtirar < 0 then                               -- se for menor que zero, ele dispara
-        atira = true
+        disparo = true
       end
-      if love.keyboard.isDown("space") and atira then       -- se a tecla space for disparada e ele puder disparar
+      if love.keyboard.isDown("space") and disparo then       -- se a tecla space for pressionada e ele puder disparar
                                                              -- é criado um novo objeto de tiro na mesma posicao da nave
         novoTiro = { x = nave.posX, y = nave.posY, img = imageTiro}
 
         table.insert (tiros,novoTiro)                       -- o novo objeto é entao inserido na tabela shots
-        atirar = false                                       -- tiro é bloqueado
+        disparo = false                                       -- tiro é bloqueado
         tempoAteAtirar = delayTiro                            -- o tempo de disparo retorna para 0.1
       end
 
