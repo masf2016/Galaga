@@ -7,7 +7,7 @@ function love.load()
   -- Nave -------------------------------
   naveBrancaImage = love.graphics.newImage("assets/player-white.png")
   nave = {
-    posX = widthWindow / 2,                                            -- posicao X do objeto na tela, no meio dela
+    posX = widthWindowPlayerArea / 2,                                            -- posicao X do objeto na tela, no meio dela
     posY = heightWindow - (naveBrancaImage:getHeight()/2),             -- posicao Y do objeto na tela, equivale a altura da janela menos a metade do tamanho do player
     velocidade = 500                                                       -- velocidade de deslocamento do player
   }
@@ -31,11 +31,27 @@ function love.load()
   pontos = 0
 
   -----------------------------------------
+  --backgroud -----------------------------
+  fundo = love.graphics.newImage("assets/background.png")
+  fundo2 = love.graphics.newImage("assets/background.png")
+  planoDeFundo = {
+    x = 0,
+    y = 0,
+    y2 = 0 - fundo:getHeight(),
+    vel = 20
+  }
+  -----------------------------------------
 
 
 end
 
 function love.draw()
+  -- Background
+  love.graphics.draw( fundo, planoDeFundo.x, planoDeFundo.y )
+  love.graphics.draw( fundo2, planoDeFundo.x, planoDeFundo.y2 )
+  -- Background
+
+
   -- Nave -------------------------------
 
   ----------------------------------------
@@ -77,7 +93,7 @@ function love.draw()
                        naveBrancaImage:getHeight()/2) --posicionamento da imagem (centralizar em Y)
                      else
                        love.graphics.print("Aperte R para recomeçar",widthWindowPlayerArea /2, heightWindow/2)
-  end
+                     end
   -----------------------------------------
 end
 
@@ -86,21 +102,8 @@ function love.update(dt)
   atirar (dt)
   inimigo (dt)
   colisions()
-
-  if not estarVivo and love.keyboard.isDown("r") then --caso tenha sido atingido, as variaveis são resetardas para  padrao
-    tiros = {}
-    inimigos = {}
-
-    disparo = tempoAteAtirar
-    tempoCriarInimigo = delayInimigo
-
-    nave.posX = widthWindow / 2
-    nave.posY =  heightWindow / 2
-
-    pontos = 0
-    estarVivo = true
-  end
-
+  resert()
+  planoDeFundoScroll(dt)
 end
 
 function atirar (dt)
@@ -201,4 +204,32 @@ end
 function checkColision (X1,Y1,W1,H1,X2,Y2,W2,H2) -- função que checa colisões.
   --Os Parametros necessarios são dois objetos: posicão x e y do objeto na tela e largura e altura do objeto que irá colidir
 return X1 < X2 + W2 and X2 < X1 + W1 and Y1 < Y2 + H2 and Y2 < Y1 + H1
+end
+
+function resert ()  -- função responsavel pelo reset do jogo
+  if not estarVivo and love.keyboard.isDown("r") then --caso tenha sido atingido, as variaveis são resetardas para  padrao
+    tiros = {}
+    inimigos = {}
+
+    disparo = tempoAteAtirar
+    tempoCriarInimigo = delayInimigo
+
+    nave.posX = widthWindowPlayerArea / 2
+    nave.posY =  heightWindow - naveBrancaImage:getHeight()/2
+
+    pontos = 0
+    estarVivo = true
+  end
+end
+
+function planoDeFundoScroll (dt)
+  planoDeFundo.y = planoDeFundo.y + planoDeFundo.vel * dt
+  planoDeFundo.y2 = planoDeFundo.y2 + planoDeFundo.vel * dt
+
+  if planoDeFundo.y < heightWindow then
+    planoDeFundo.y = planoDeFundo.y2 -fundo2:getHeight()
+  end
+  if planoDeFundo.y2 > heightWindow then
+  planoDeFundo.y2 = planoDeFundo.y - fundo:getHeight()
+  end
 end
