@@ -1,0 +1,24 @@
+tile = cenario
+github.com/karai17/simple-tiled-implementation
+opengameart.org
+
+collidable = true
+
+local sti = require "sti"
+
+
+function love.load()
+map = sti.new ("assets/test.lua",{"box2d"})
+--ou
+map = sti.new ("assets/test.lua",{"bump"})
+
+map:addCustomLayer("Player Layer",2)
+
+love.physics.setMeter(70)
+playerLayer.sprite.body:setFixedRotation(true)
+
+--colider
+love.graphics.setColor(255.255.0)
+map:box2d draw()
+love.graphics.polygon("line")
+love.graphics.setColor

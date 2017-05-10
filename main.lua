@@ -14,7 +14,7 @@ function love.load()
   ----------------------------------------
   -- tiros -------------------------------
   disparo = true                                                       -- disparo, habilitado
-  delayTiro = 0.2                                                   -- delay entre os disparo
+  delayTiro = 0.5                                                   -- delay entre os disparo
   tempoAteAtirar = delayTiro                                           -- tempo ate o disparo, equivale ao delayShoot
   tiros = {}                                                            -- disparos
   imageTiro = love.graphics.newImage("assets/ammunition.png")        --imagem usada para munição
@@ -25,12 +25,26 @@ function love.load()
   imageInimigo = love.graphics.newImage("assets/enemie-red.png")
   inimigos = {}
   ----------------------------------------
-
+  -- Pontuação ----------------------------
+  --  fontGalaga = love.graphics.newImageFont("fonts/Emulogic.png", " ABCDEFGHIJKLMNOPQRSTUVWXYZ0" .. "123456789.,!?-+/():;%&*#=[]")
+  fontGalaga = love.graphics.newFont("fonts/emulogic.ttf", 18)
+  -----------------------------------------
   --vidas e pontuação ---------------------
   estarVivo = true
   pontos = 0
 
   -----------------------------------------
+
+  -- Sons -------------------------------
+  somTiro = love.audio.newSource("sounds/Galaga_Firing_Sound_Effect.wav","static")
+  explodeInimigo = love.audio.newSource("sounds/Galaga_Explosion_Sound_Effect.wav","static")
+  explodindoMe = love.audio.newSource("sounds/Galaga_Kill_Enemy_Sound_Effect.wav","static")
+  musicaFundo =  love.audio.newSource("sounds/Galaga_Melody_Sound.wav")
+  musicaFundo:play()
+  musicaFundo:setLooping(true)
+
+  ---------------------------------------
+
   --backgroud -----------------------------
   fundo = love.graphics.newImage("assets/background.png")
   fundo2 = love.graphics.newImage("assets/background.png")
@@ -38,7 +52,7 @@ function love.load()
     x = 0,
     y = 0,
     y2 = 0 - fundo:getHeight(),
-    vel = 20
+    vel = 40
   }
   -----------------------------------------
 
@@ -51,9 +65,16 @@ function love.draw()
   love.graphics.draw( fundo2, planoDeFundo.x, planoDeFundo.y2 )
   -- Background
 
+  -- Pontos na tela -----------------------------
+  love.graphics.setFont(fontGalaga)
+  love.graphics.print("Score \n" .. pontos, widthWindowPlayerArea + 10, heightWindow *0.1)
+  love.graphics.print("Item ", widthWindowPlayerArea + 10, heightWindow *0.4)
+  love.graphics.print("Life ", widthWindowPlayerArea + 10, heightWindow *0.7)
+  ---------------------------------------
+
+
 
   -- Nave -------------------------------
-
   ----------------------------------------
 
   -- tiros -------------------------------
@@ -62,8 +83,8 @@ function love.draw()
                        tiro.x, --posicao do objeto em X
                        tiro.y, --posicao do objeto em Y
                        0,  --angulo de rotação do objeto na tela
-                       0.3, --tamanho do objeto na tela em 30%
-                       0.3, --tamanho do objeto na tela em 30%
+                       1, --tamanho do objeto na tela em 30%
+                       1, --tamanho do objeto na tela em 30%
                        imageTiro:getWidth()/2,  --posicionamento da imagem (centralizar em X)
                        imageTiro:getHeight()/2) --posicionamento da imagem (centralizar em Y)
   end
@@ -74,8 +95,8 @@ function love.draw()
                       inimigo.x,
                       inimigo.y,
                       0,
-                      0.3,
-                      0.3,
+                      1,
+                      1,
                       imageInimigo:getWidth()/2,
                       imageInimigo:getHeight()/2)
   end
@@ -87,12 +108,12 @@ function love.draw()
                        nave.posX, --posicao do objeto em X
                        nave.posY, --posicao do objeto em Y
                        0,   --angulo de rotação do objeto na tela
-                       0.3, --tamanho do objeto na tela em 30%
-                       0.3, --tamanho do objeto na tela em 30%
+                       1, --tamanho do objeto na tela em 30% (0.3)
+                       1, --tamanho do objeto na tela em 30%
                        naveBrancaImage:getWidth()/2, --posicionamento da imagem (centralizar em X)
                        naveBrancaImage:getHeight()/2) --posicionamento da imagem (centralizar em Y)
                      else
-                       love.graphics.print("Aperte R para recomeçar",widthWindowPlayerArea /2, heightWindow/2)
+                       love.graphics.print("Press R from restart",80, heightWindow/2)
                      end
   -----------------------------------------
 end
@@ -119,7 +140,9 @@ function atirar (dt)
                        img = imageTiro
                      }
 
-          table.insert (tiros,novoTiro)                       -- o novo objeto é entao inserido na tabela shots
+          table.insert (tiros,novoTiro)    -- o novo objeto é entao inserido na tabela shots
+          somTiro:stop()
+          somTiro:play()
           disparo = false                                       -- tiro é bloqueado
           tempoAteAtirar = delayTiro                            -- o tempo de disparo retorna para 0.1
         end
@@ -183,19 +206,32 @@ end
 function colisions ()                       --função que checa se houve colisoes com os tiros
   for i,inimigo in ipairs(inimigos) do
     for j,tiro in ipairs(tiros) do
-      if checkColision(inimigo.x, inimigo.y, imageInimigo:getWidth(),
-                       imageInimigo:getHeight(),tiro.x,tiro.y,imageTiro:getWidth(),
+      if checkColision(inimigo.x,
+                       inimigo.y,
+                       imageInimigo:getWidth(),
+                       imageInimigo:getHeight(),
+                       tiro.x,
+                       tiro.y,
+                       imageTiro:getWidth(),
                        imageTiro:getHeight()) then
         table.remove(tiros, j)
         table.remove(inimigos, i)
+        explodeInimigo:stop()
+        explodeInimigo:play()
         pontos = pontos + 1
       end
     end
     -- checa se ouve colisao com a nave do inimigo
-    if checkColision(inimigo.x, inimigo.y, imageInimigo:getWidth(),
-                     imageInimigo:getHeight(),nave.posX - (naveBrancaImage:getWidth()/2),
-                     nave.posY, naveBrancaImage:getWidth(), naveBrancaImage:getHeight()) and estarVivo then
+    if checkColision(inimigo.x,
+                     inimigo.y,
+                     imageInimigo:getWidth(),
+                     imageInimigo:getHeight(),
+                     nave.posX - ((naveBrancaImage:getWidth()/2)),
+                     nave.posY,
+                     naveBrancaImage:getWidth(),
+                     naveBrancaImage:getHeight()) and estarVivo then
       table.remove(inimigos, i)
+      explodindoMe:play()
       estarVivo = false
     end
   end
