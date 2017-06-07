@@ -12,17 +12,17 @@ function love.load()
         -- Nave -------------------------------
         naveBrancaImage = love.graphics.newImage("assets/images/player-white.png")
         nave = {
-          posX = widthWindowPlayerArea / 2,                                            -- posicao X do objeto na tela, no meio dela
+          posX = widthWindowPlayerArea / 2,                                  -- posicao X do objeto na tela, no meio dela
           posY = heightWindow - (naveBrancaImage:getHeight()/2),             -- posicao Y do objeto na tela, equivale a altura da janela menos a metade do tamanho do player
-          velocidade = 500                                                       -- velocidade de deslocamento do player
+          velocidade = 500                                                   -- velocidade de deslocamento do player
         }
         ----------------------------------------
         -- tiros -------------------------------
-        disparo = true                                                       -- disparo, habilitado
+        disparo = true                                                    -- disparo, habilitado
         delayTiro = 0.5                                                   -- delay entre os disparo
-        tempoAteAtirar = delayTiro                                           -- tempo ate o disparo, equivale ao delayShoot
-        tiros = {}                                                            -- disparos
-        imageTiro = love.graphics.newImage("assets/images/ammunition.png")        --imagem usada para munição
+        tempoAteAtirar = delayTiro                                        -- tempo ate o disparo, equivale ao delayShoot
+        tiros = {}                                                        -- disparos
+        imageTiro = love.graphics.newImage("assets/images/ammunition.png")--imagem usada para munição
         ----------------------------------------
         -- inimigos ----------------------------
         delayInimigo = 0.4
@@ -31,7 +31,7 @@ function love.load()
         inimigos = {}
         ----------------------------------------
         -- Pontuação ----------------------------
-        --  fontGalaga = love.graphics.newImageFont("fonts/Emulogic.png", " ABCDEFGHIJKLMNOPQRSTUVWXYZ0" .. "123456789.,!?-+/():;%&*#=[]")
+
         fontGalaga = love.graphics.newFont("assets/fonts/emulogic.ttf", 18)
         -----------------------------------------
         --vidas e pontuação ---------------------
@@ -148,7 +148,8 @@ function love.draw()
                              1, --tamanho do objeto na tela em 30%
                              imageTiro:getWidth()/2,  --posicionamento da imagem (centralizar em X)
                              imageTiro:getHeight()/2) --posicionamento da imagem (centralizar em Y)
-          if pontos > 20 then
+          if pontos >= 2000 then -- se os pontos ultrapassarem 2000
+            love.graphics.print("Tripe \nFire-Blue" ..life, widthWindowPlayerArea + 10, heightWindow *0.5)
             love.graphics.draw(tiro.img, --imagem a ser carregada
                                tiro.x - 10, --posicao do objeto em X
                                tiro.y + 15, --posicao do objeto em Y
@@ -166,7 +167,8 @@ function love.draw()
                                imageTiro:getWidth()/2,  --posicionamento da imagem (centralizar em X)
                                imageTiro:getHeight()/2) --posicionamento da imagem (centralizar em Y)
             delayTiro = 0.4
-            if pontos > 50 then
+            if pontos >= 5000 then -- se os pontos ultrapassarem 5000
+              love.graphics.print("Penta \nFire-Blue" ..life, widthWindowPlayerArea + 10, heightWindow *0.5)
               love.graphics.draw(tiro.img, --imagem a ser carregada
                                  tiro.x - 20, --posicao do objeto em X
                                  tiro.y + 30, --posicao do objeto em Y
@@ -184,8 +186,9 @@ function love.draw()
                                  imageTiro:getWidth()/2,  --posicionamento da imagem (centralizar em X)
                                  imageTiro:getHeight()/2) --posicionamento da imagem (centralizar em Y)
               delayTiro = 0.3
-              if pontos > 100 then
-                delayTiro = 0.2
+              if pontos >= 10000 then -- se os pontos ultrapassarem 10000
+                love.graphics.print("Insane \nPenta \nFire-Blue" ..life, widthWindowPlayerArea + 10, heightWindow *0.5)
+                delayTiro = 0.2 --tempo de atraso do jogo diminiu para 0.2
               end
             end
           end
@@ -227,7 +230,7 @@ function love.draw()
                            elseif gameOver then
                              love.graphics.setColor(255,255,255, transparencia)
                              love.graphics.draw(imageGameOver,0,0)
-                             love.graphics.print("Total\n\nscore\n\n  "..pontos,widthWindowPlayerArea + (widthWindowInfoArea /2),heightWindow/2)
+                             love.graphics.print("Total\n\nscore\n  "..pontos,widthWindowPlayerArea + (widthWindowInfoArea /2),heightWindow/2)
                            else
                              love.graphics.draw(telaTitulo,inOutX,inOutY)
                              --love.graphics.print("Press R from restart",80, heightWindow/2)
@@ -242,7 +245,8 @@ function love.draw()
 end
 
 function love.update(dt)
-        if not pauseGame then
+        if not pauseGame then -- caso a pausa não seja acionada
+
           movimentos (dt)
           atirar (dt)
           inimigo (dt)
@@ -251,6 +255,7 @@ function love.update(dt)
           planoDeFundoScroll(dt)
           startGame(dt)
           controllerExplosionNave(dt)
+
         end
         if gameOver then
           galagaGameOver(dt)
@@ -351,7 +356,7 @@ function colisions ()                       --função que checa se houve coliso
         table.remove(inimigos, i)
         explodeInimigo:stop()
         explodeInimigo:play()
-        pontos = pontos + 1
+        pontos = pontos + 90
       end
     end
     -- checa se ouve colisao com a nave do inimigo
