@@ -37,6 +37,7 @@ function love.load()
         --vidas e pontuação ---------------------
         estarVivo = true
         pontos = 0
+        statusFire = "simple fire"
         life = 5
         gameOver = false
         transparencia = 0
@@ -113,6 +114,7 @@ function love.draw()
         love.graphics.setFont(fontGalaga)
         love.graphics.print("Score \n" .. pontos, widthWindowPlayerArea + 10, heightWindow *0.1)
         love.graphics.print("Item ", widthWindowPlayerArea + 10, heightWindow *0.4)
+        love.graphics.print(statusFire, widthWindowPlayerArea + 10, heightWindow *0.5)
         love.graphics.print("Life \n" ..life, widthWindowPlayerArea + 10, heightWindow *0.7)
 
         --love.graphics.draw(imageLife, widthWindowPlayerArea + imageQuantLife, heightWindow *0.8)
@@ -149,7 +151,8 @@ function love.draw()
                              imageTiro:getWidth()/2,  --posicionamento da imagem (centralizar em X)
                              imageTiro:getHeight()/2) --posicionamento da imagem (centralizar em Y)
           if pontos >= 2000 then -- se os pontos ultrapassarem 2000
-            love.graphics.print("Tripe \nFire-Blue" ..life, widthWindowPlayerArea + 10, heightWindow *0.5)
+            --love.graphics.print("Tripe \nFire-Blue" ..life, widthWindowPlayerArea + 10, heightWindow *0.5)
+            statusFire = "Tripe \nFire-Blue"
             love.graphics.draw(tiro.img, --imagem a ser carregada
                                tiro.x - 10, --posicao do objeto em X
                                tiro.y + 15, --posicao do objeto em Y
@@ -168,7 +171,8 @@ function love.draw()
                                imageTiro:getHeight()/2) --posicionamento da imagem (centralizar em Y)
             delayTiro = 0.4
             if pontos >= 5000 then -- se os pontos ultrapassarem 5000
-              love.graphics.print("Penta \nFire-Blue" ..life, widthWindowPlayerArea + 10, heightWindow *0.5)
+              --love.graphics.print("Penta \nFire-Blue" ..life, widthWindowPlayerArea + 10, heightWindow *0.5)
+              statusFire = "Penta \nFire-Blue"
               love.graphics.draw(tiro.img, --imagem a ser carregada
                                  tiro.x - 20, --posicao do objeto em X
                                  tiro.y + 30, --posicao do objeto em Y
@@ -187,7 +191,8 @@ function love.draw()
                                  imageTiro:getHeight()/2) --posicionamento da imagem (centralizar em Y)
               delayTiro = 0.3
               if pontos >= 10000 then -- se os pontos ultrapassarem 10000
-                love.graphics.print("Insane \nPenta \nFire-Blue" ..life, widthWindowPlayerArea + 10, heightWindow *0.5)
+                --love.graphics.print("Insane \nPenta \nFire-Blue" ..life, widthWindowPlayerArea + 10, heightWindow *0.5)
+                statusFire = "Insane \nPenta \nFire-Blue"
                 delayTiro = 0.2 --tempo de atraso do jogo diminiu para 0.2
               end
             end
@@ -230,7 +235,7 @@ function love.draw()
                            elseif gameOver then
                              love.graphics.setColor(255,255,255, transparencia)
                              love.graphics.draw(imageGameOver,0,0)
-                             love.graphics.print("Total\n\nscore\n  "..pontos,widthWindowPlayerArea + (widthWindowInfoArea /2),heightWindow/2)
+                             love.graphics.print("Total\n\nscore\n"..pontos,widthWindowPlayerArea + (widthWindowInfoArea /2),heightWindow/2)
                            else
                              love.graphics.draw(telaTitulo,inOutX,inOutY)
                              --love.graphics.print("Press R from restart",80, heightWindow/2)
